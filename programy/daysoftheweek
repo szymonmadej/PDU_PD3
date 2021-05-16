@@ -17,6 +17,7 @@ daysoftheweek <- function(PostsCH) {
   pom <- table(dni_tygodnia)
   pomoc <- as.data.frame(pom)
   pomoc$dni_tygodnia <- factor(pomoc$dni_tygodnia, levels = c("Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"))
-  wykresik <- ggplot(pomoc, aes(x=dni_tygodnia, y=Freq)) + geom_bar(stat = "identity", color = "blue", fill=rgb(0.7,0.1,0.1,0.7))
+  wykresik <- ggplot(pomoc, aes(x=dni_tygodnia, y=Freq)) + geom_bar(stat = "identity", color = "blue", fill=rgb(0.7,0.1,0.1,0.7)) + 
+  ggtitle("Posts on certain days of the week")
   return(wykresik)
 }
