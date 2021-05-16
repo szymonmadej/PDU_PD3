@@ -1,0 +1,10 @@
+postyzablokowaneBD <- PostHistoryBD[PostHistoryBD$PostHistoryTypeId==14,]
+postyzablokowaneCH <- PostHistoryCH[PostHistoryCH$PostHistoryTypeId==14,]
+postyzablokowaneJD <- PostHistoryJD[PostHistoryJD$PostHistoryTypeId==14,]
+
+danedowykresu <- data.frame(c('Buddhism','Christianity','Judaism'),c(nrow(postyzablokowaneBD),nrow(postyzablokowaneCH),nrow(postyzablokowaneJD)))
+colnames(danedowykresu) <- c("Religion","Number of locked posts")
+danedowykresu
+colour <- c('green','blue','red')
+plot <- ggplot(danedowykresu,aes(x=Religion,y=danedowykresu[,'Number of locked posts'])) + geom_bar(stat='identity', color=colour,fill=colour) + labs(y='Number of locked posts')+theme(legend.position="none") 
+plot
