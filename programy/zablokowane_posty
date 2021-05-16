@@ -6,5 +6,9 @@ danedowykresu <- data.frame(c('Buddhism','Christianity','Judaism'),c(nrow(postyz
 colnames(danedowykresu) <- c("Religion","Number of locked posts")
 danedowykresu
 colour <- c('green','blue','red')
-plot <- ggplot(danedowykresu,aes(x=Religion,y=danedowykresu[,'Number of locked posts'])) + geom_bar(stat='identity', color=colour,fill=colour) + labs(y='Number of locked posts')+theme(legend.position="none") 
+plot <- ggplot(danedowykresu,aes(x=Religion,y=danedowykresu[,'Number of locked posts'])) + 
+        geom_bar(stat='identity', color=colour,fill=colour) + 
+        labs(y='Number of locked posts')+
+        theme(legend.position="none") +
+        ggtitle('Posts blocked by the moderator')
 plot
