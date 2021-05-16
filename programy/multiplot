@@ -33,5 +33,5 @@ multiplot <- function(..., plotlist=NULL, file, cols=1, layout=NULL) {
     }
   }
 }
-#Funckja ta pochodzi z tej o to strony:
+#Funckja ta pochodzi z tej oto strony:
 https://stackoverflow.com/questions/24387376/r-error-could-not-find-function-multiplot-using-cookbook-example
