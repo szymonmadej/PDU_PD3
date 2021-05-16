@@ -1,0 +1,65 @@
+str2date <- function(x){
+  #string na date
+  as.POSIXlt(stri_replace_all_regex(x, "(.*)\\T(.*)?\\.(\\d)", "$1 $2"),
+             tz = "GMT", format = "%Y-%m-%d %H:%M:%S")
+}
+str2hour <- function(date){
+  #string na godzine
+  format(as.POSIXct(strptime(str2date(date),"%Y-%m-%d %H:%M:%S",tz="")) ,format = "%H")
+}
+
+comments_number_by_hour <- function(PostsCH, CommentsCH){
+  #funkcja licząca liczbę postów na godzinę dnia
+  #wejściowe to ramki danych Posts* i Comments*
+  colnames(CommentsCH) <- c("Id","PostId","Score","Text","CreationDate","UserId","ContentLicense","UserDisplayName")
+  com <- PostsCH %>% left_join(CommentsCH, by = c("Id" = "PostId"))
+  com <- com %>%
+    filter(PostTypeId == 1)%>%
+    select(Id, CreationDate.x, ViewCount,CommentCount, Score.x, CreationDate.y) %>%
+    mutate(Comment_hour = str2hour(CreationDate.y)) %>%
+    filter(Comment_hour != "NA")
+  com <- com %>%
+    group_by(Comment_hour)%>%
+    summarise(Com_per_hour = n())
+}
+
+comments_number_by_day <- function(PostsCH, CommentsCH){
+  #funkcja licząca liczbę postów na dzień tygodnia
+  #wejściowe to ramki danych Posts* i Comments*
+  colnames(CommentsCH) <- c("Id","PostId","Score","Text","CreationDate","UserId","ContentLicense","UserDisplayName")
+  com <- PostsCH %>% left_join(CommentsCH, by = c("Id" = "PostId"))
+  com <- com %>%
+    filter(PostTypeId == 1)%>%
+    select(Id, CreationDate.x, ViewCount,CommentCount, Score.x, CreationDate.y) %>%
+    mutate(Day = weekdays(str2date(CreationDate.y))) %>%
+    filter(Day != "NA")
+  com <- com %>%
+    group_by(Day)%>%
+    summarise(Com_per_day = n())
+}
+Plot_com_num_by_day <- function(PostsCH, CommentsCH){
+  #funckja tworząca wykres liczby postów od dnia tygodnia
+  #dane wejściowe to Posts* i Comments*
+  com_num_by_dayCH <- comments_number_by_day(PostsCH, CommentsCH)
+  com_num_by_dayCH$Day <- factor(com_num_by_dayCH$Day, levels = c("poniedziałek",
+                                                                  "wtorek","środa","czwartek","piątek","sobota","niedziela"))
+  Plot_com_num_by_dayCH <- ggplot(com_num_by_dayCH, aes(x=Day, y=Com_per_day)) + geom_bar(stat = "identity", fill = rgb(0.2,0.7,0.6))
+}
+
+
+Plot_com_num_by_hour <- function(PostsCH, CommentsCH){
+  #funckja tworząca wykres liczby postów od godziny dnia
+  #dane wejściowe to Posts* i Comments*
+  com_num_by_hourCH <- comments_number_by_hour(PostsCH, CommentsCH)
+  Plot_com_num_by_hourCH <- ggplot(com_num_by_hourCH, aes(x=Comment_hour, y=Com_per_hour)) + geom_bar(stat = "identity", fill = rgb(0.2,0.7,0.6))
+}
+#wykresy
+Plot_com_num_by_dayCH <- Plot_com_num_by_day(PostsCH, CommentsCH)
+Plot_com_num_by_dayJD <- Plot_com_num_by_day(PostsJD, CommentsJD)
+Plot_com_num_by_dayBD <- Plot_com_num_by_day(PostsBD, CommentsBD)
+
+Plot_com_num_by_hourCH <- Plot_com_num_by_hour(PostsCH, CommentsCH)
+Plot_com_num_by_hourJD <- Plot_com_num_by_hour(PostsJD, CommentsJD)
+Plot_com_num_by_hourBD <- Plot_com_num_by_hour(PostsBD, CommentsBD)
+
+
