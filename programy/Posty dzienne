@@ -11,7 +11,8 @@ posty_dzienne <- function(PostsCH) {
   pomo <- as_data_frame(pom, StringsAsFactors = FALSE)
   pomo$data <- stri_datetime_parse(pomo$data,format = 'yyyy-MM-dd')
   
-  wykresik <- ggplot(pomo, aes(x=data, y=n)) + geom_bar(stat = "identity", color = "blue", fill=rgb(0.1,0.8,0.1,0.7), alpha = 0.5)
+  wykresik <- ggplot(pomo, aes(x=data, y=n)) + geom_bar(stat = "identity", color = "blue", fill=rgb(0.1,0.8,0.1,0.7), alpha = 0.5) + 
+  ggtitle("Number of posts per day")
   
   return(wykresik)
 }
