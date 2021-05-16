@@ -1,0 +1,67 @@
+upvotesBD <- VotesBD %>%
+              select(PostId,VoteTypeId)%>%
+              filter(VoteTypeId==2) %>%
+              group_by(PostId) %>%
+              count(VoteTypeId)%>%                    
+              rename('NumberofUpvotes'=n )
+downvotesBD <-VotesBD %>%
+              select(PostId,VoteTypeId)%>%
+              filter(VoteTypeId==3) %>%
+              group_by(PostId) %>%
+              count(VoteTypeId)%>%
+              rename('NumberofDownvotes'=n )        
+mergedBD <- inner_join(upvotesBD,downvotesBD, by='PostId') %>%
+            mutate(Difference = NumberofUpvotes - NumberofDownvotes)
+
+upvotesCH <- VotesCH %>%
+  select(PostId,VoteTypeId)%>%
+  filter(VoteTypeId==2) %>%
+  group_by(PostId) %>%
+  count(VoteTypeId)%>%
+  rename('NumberofUpvotes'=n )
+downvotesCH <-VotesCH %>%
+  select(PostId,VoteTypeId)%>%
+  filter(VoteTypeId==3) %>%
+  group_by(PostId) %>%
+  count(VoteTypeId)%>%
+  rename('NumberofDownvotes'=n )        
+mergedCH <- inner_join(upvotesCH,downvotesCH, by='PostId') %>%
+  mutate(Difference = NumberofUpvotes - NumberofDownvotes)
+
+
+upvotesJD <- VotesJD %>%
+  select(PostId,VoteTypeId)%>%
+  filter(VoteTypeId==2) %>%
+  group_by(PostId) %>%
+  count(VoteTypeId)%>%
+  rename('NumberofUpvotes'=n )
+downvotesJD <-VotesJD %>%
+  select(PostId,VoteTypeId)%>%
+  filter(VoteTypeId==3) %>%
+  group_by(PostId) %>%
+  count(VoteTypeId)%>%
+  rename('NumberofDownvotes'=n )        
+mergedJD <- inner_join(upvotesJD,downvotesJD, by='PostId') %>%
+  mutate(Difference = NumberofUpvotes - NumberofDownvotes)
+
+
+mergedBD <- unlist(mergedBD["Difference"])
+mergedCH <- unlist(mergedCH["Difference"])
+mergedJD <- unlist(mergedJD["Difference"])
+
+max.len = max(length(mergedBD),length(mergedCH),length(mergedJD))
+mergedBD <- c(mergedBD, rep(NA, max.len - length(mergedBD)))
+mergedCH <- c(mergedCH, rep(NA, max.len - length(mergedCH)))
+mergedJD <- c(mergedJD, rep(NA, max.len - length(mergedJD)))
+x <- data.frame(mergedBD,mergedCH,mergedJD)
+
+
+data <- melt(x)
+wykres<- ggplot(data,aes(x=value,fill=variable))+ 
+            geom_density(alpha=0.25) + 
+            scale_fill_discrete(name="Legend",
+                              labels=c("Buddhism",'Christianity','Judaism')) +
+                              labs(x='Difference') + ggtitle("Density of difference between Upvotes and Downvotes")+
+                              xlim(-10, 25)
+
+wykres
