@@ -1,0 +1,7 @@
+namesBD <- as.data.frame(table(BadgesBD[,'Name']),stringsAsFactors = FALSE)
+namesCH <- as.data.frame(table(BadgesCH[,'X_Name']),stringsAsFactors = FALSE)
+namesJD <- as.data.frame(table(BadgesJD[,'Name']),stringsAsFactors = FALSE)
+merged <- merge(merge(namesBD,namesCH, by = 'Var1'),namesJD, by='Var1')
+colnames(merged) <- c('Name','Buddhism','Christianity','Judaism')
+merged <- merged %>% arrange(desc(Buddhism),desc(Christianity),desc(Judaism))
+merged
