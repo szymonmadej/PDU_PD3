@@ -1,0 +1,23 @@
+nazwyBD <- BadgesBD %>%
+  select(UserId,Name) %>%
+  group_by(UserId) %>%
+  count(UserId) %>%
+  rename(Count = n)
+nazwyCH <- BadgesCH %>%
+  select(X_UserId,X_Name) %>%
+  group_by(X_UserId) %>%
+  count(X_UserId) %>%
+  rename(Count =n,UserId=X_UserId)
+nazwyJD <- BadgesJD %>%
+  select(UserId,Name) %>%
+  group_by(UserId) %>%
+  count(UserId) %>%
+  rename(Count = n)
+
+gestoscnazwyBD <- ggplot(nazwyBD,aes(Count)) + geom_density(color='darkolivegreen4') +xlim(0,100) +ylim(0,2)
+
+gestoscnazwyCH <- ggplot(nazwyCH,aes(Count)) + geom_density(color='royalblue1')+xlim(0,100)
+
+gestoscnazwyJD <- ggplot(nazwyJD,aes(Count)) + geom_density(color='orchid3')+xlim(0,100)+ylim(0,2)
+
+multiplot(gestoscnazwyBD,gestoscnazwyCH,gestoscnazwyJD)
