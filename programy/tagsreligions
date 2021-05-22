@@ -1,0 +1,17 @@
+tagiBD <- TagsBD[,c('TagName','Count')]
+tagiCH <- TagsCH[,c('TagName','Count')]
+tagiJD <- TagsJD[,c('TagName','Count')]
+
+tags <- inner_join(tagiBD, tagiCH, by = 'TagName')
+tagsall <- inner_join(tags,tagiJD, by = "TagName") %>%
+  rename(Buddhism=Count.x,Christianity=Count.y,Judaism=Count)%>%
+  arrange(desc(Christianity))
+
+tagsbud <- ggplot(tagsall, aes(x=TagName,y=Buddhism)) + geom_bar(stat='identity',fill = 'darkolivegreen4') + 
+  scale_x_discrete(guide= guide_axis(angle = 50)) +ggtitle('Buddhism')+ labs(x=NULL, y="Count")
+tagschr <- ggplot(tagsall, aes(x=TagName,y=Christianity)) + geom_bar(stat='identity',fill = 'royalblue1') +
+  scale_x_discrete(guide= guide_axis(angle = 50)) + ggtitle('Christianity') +labs(x=NULL, y="Count")
+tagsjud <- ggplot(tagsall, aes(x=TagName,y=Judaism)) + geom_bar(stat='identity',fill = 'orchid3') +
+  scale_x_discrete(guide= guide_axis(angle = 50)) + ggtitle('Judaism') + labs(x=NULL, y="Count")
+
+multiplot(tagsbud,tagschr,tagsjud)
