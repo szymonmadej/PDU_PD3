@@ -1,0 +1,41 @@
+mostcrazy <- function(PostsBD,CommentsBD){
+  #funkcja zwracająca ramkę danych gdzie są posty i komentarze do nich osoby która dodała najwięcej postów jednego dnia
+  #potrzebny tylko dplyr żadnej innej funkcji nie trzeba
+  mostcrazyguy <- PostsBD %>%
+    filter(PostTypeId == 1) %>%
+    mutate(CreDate = as.Date(CreationDate)) %>%
+    select(Body, OwnerUserId,CreDate) %>%
+    group_by(OwnerUserId, CreDate) %>%
+    summarise(NumberOfPosts = n(), .groups = "drop")
+  mostcrazyguy <- mostcrazyguy[!is.na(mostcrazyguy$OwnerUserId),]
+  mostcrazyguy <- mostcrazyguy %>%
+    arrange(desc(NumberOfPosts))
+  temp <- mostcrazyguy[1,]
+  mostcrazyguy <- PostsBD %>%
+    filter(PostTypeId == 1) %>%
+    mutate(CreDate = as.Date(CreationDate)) 
+  mostcrazyguy <- mostcrazyguy %>%
+    filter(OwnerUserId == temp$OwnerUserId) %>%
+    filter(CreDate == temp$CreDate) %>%
+    select(Id, Body, Title, Tags,CreationDate,AnswerCount,OwnerUserId)
+  mostcrazyguy <-mostcrazyguy %>% full_join(CommentsBD, by = c("Id" = "PostId"))
+  mostcrazyguy <-mostcrazyguy %>%
+    filter(!is.na(Body)) %>%
+    select(Body, Title, Tags, Text, CreationDate.x, OwnerUserId)
+}
+
+mostcrazyBD <- mostcrazy(PostsBD,CommentsBD)
+mostcrazyCH <- mostcrazy(PostsCH,CommentsCH)
+#####ten pijany gościu jest tuta
+mostcrazyJD <- mostcrazy(PostsJD,CommentsJD)
+######
+
+###to też ogarnij, to jest post gościa który dodał najwięcej postów jednego dnia
+###to jego drugi najlepiej oceniany post, coś o myciu rąk podczas jedzenia pizzy XD
+Pizza <- function(){
+joined <- PostsJD %>% left_join(CommentsJD, by = c("Id" = "PostId"))
+PizzaThing <- joined %>%
+  filter(Id == 1818) %>%
+  select(Body, Title, Tags, Text)
+}
+PizzaThing <- Pizza()
