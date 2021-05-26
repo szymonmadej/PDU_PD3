@@ -15,6 +15,6 @@ tagschr <- ggplot(tagsall, aes(x=TagName,y=Christianity)) + geom_bar(stat='ident
 tagsjud <- ggplot(tagsall, aes(x=TagName,y=Judaism)) + geom_bar(stat='identity',fill = 'orchid3') +
   scale_x_discrete(guide= guide_axis(angle = 50)) + ggtitle('Judaism') + labs(x=NULL, y="Count")
 
-return(multiplot(tagsbud,tagschr,tagsjud))
+multiplot(tagsbud,tagschr,tagsjud)
+tagsall %>% highlight(.$TagName =='heresy')
 }
-
