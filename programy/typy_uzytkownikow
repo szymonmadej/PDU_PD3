@@ -1,4 +1,5 @@
 namesplot <- function(){
+### funkcja zwraca wykresy poszczegolnych badges w zaleznosci od religii
 namesBD <- as.data.frame(table(BadgesBD[,'Name']),stringsAsFactors = FALSE)
 namesCH <- as.data.frame(table(BadgesCH[,'X_Name']),stringsAsFactors = FALSE)
 namesJD <- as.data.frame(table(BadgesJD[,'Name']),stringsAsFactors = FALSE)
