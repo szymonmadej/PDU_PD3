@@ -1,3 +1,4 @@
+gestoscbadges <- function(){
 nazwyBD <- BadgesBD %>%
   select(UserId,Name) %>%
   group_by(UserId) %>%
@@ -20,4 +21,5 @@ gestoscnazwyCH <- ggplot(nazwyCH,aes(Count)) + geom_density(color='royalblue1')+
 
 gestoscnazwyJD <- ggplot(nazwyJD,aes(Count)) + geom_density(color='orchid3')+xlim(0,100)+ylim(0,2)
 
-multiplot(gestoscnazwyBD,gestoscnazwyCH,gestoscnazwyJD)
+return(multiplot(gestoscnazwyBD,gestoscnazwyCH,gestoscnazwyJD))
+}
