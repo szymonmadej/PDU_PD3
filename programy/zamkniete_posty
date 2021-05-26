@@ -1,3 +1,4 @@
+postyzamkniete <- function(){
 postyzamknieteBD <- PostHistoryBD[PostHistoryBD$PostHistoryTypeId==10,]
 postyzamknieteCH <- PostHistoryCH[PostHistoryCH$PostHistoryTypeId==10,]
 postyzamknieteJD <- PostHistoryJD[PostHistoryJD$PostHistoryTypeId==10,]
@@ -5,10 +6,9 @@ postyzamknieteJD <- PostHistoryJD[PostHistoryJD$PostHistoryTypeId==10,]
 danedowykresu <- data.frame(c('Buddhism','Christianity','Judaism'),c(nrow(postyzamknieteBD),nrow(postyzamknieteCH),nrow(postyzamknieteJD)))
 colnames(danedowykresu) <- c("Religion","Number of closed posts")
 danedowykresu
-colour <- c('green','blue','red')
+colour <- c('darkolivegreen4','royalblue1','orchid3')
 plot <- ggplot(danedowykresu,aes(x=Religion,y=danedowykresu[,'Number of closed posts'])) + 
-        geom_bar(stat='identity',color=colour,fill=colour) + 
-        labs(y='Number of closed posts')+
-        theme(legend.position="none")+
-        ggtitle("Posts voted to be closed")
-plot
+                geom_bar(stat='identity',color=colour,fill=colour) + labs(y='Number of closed posts')+
+                theme(legend.position="none") +ggtitle("Number of posts voted to be closed")
+return(plot)
+}
