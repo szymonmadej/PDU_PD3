@@ -1,18 +1,17 @@
+sredniareputacja <- function(){
 usersrepBD <- UsersBD %>%
               select(Reputation)
 usersrepCH <- UsersCH %>%
   select(Reputation)
 usersrepJD <- UsersJD %>%
   select(Reputation)
-colours <- c('red','blue','green')
+colours <- c('darkolivegreen4','royalblue1','orchid3')
 danedowykresu <- data.frame(c('Buddhism','Christianity','Judaism'),c(mean(usersrepBD$Reputation),mean(usersrepCH$Reputation),mean(usersrepJD$Reputation)))
 colnames(danedowykresu) <- c("Religion", 'Averagereputation')
-wykrsrrep <- ggplot(danedowykresu,aes(x=Religion,y=Averagereputation)) + geom_bar(stat='identity',color=colours,fill=colours) + theme(legend.position = "none") + ggtitle("Average reputation of users on different forums")
-wykrsrrep
-
-
-
-
+wykresrep <- ggplot(danedowykresu,aes(x=Religion,y=Averagereputation)) + geom_bar(stat='identity',color=colours,fill=colours) + theme(legend.position = "none") + ggtitle("Average reputation of users on different forums")
+return(wykresrep)
+}
+gestoscreputacji <- function(){
 usersrepBD <- unlist(usersrepBD)
 usersrepCH <- unlist(usersrepCH)
 usersrepJD <- unlist(usersrepJD)
@@ -30,4 +29,5 @@ wykresreputacji<- ggplot(data,aes(x=value,fill=variable))+
   scale_fill_discrete(name="Legend",
                       labels=c("Buddhism",'Christianity','Judaism')) +
   labs(x='Reputation') + ggtitle("Density of Reputation of Users") + xlim(1,100)
-wykresreputacji
+return(wykresreputacji)
+}
