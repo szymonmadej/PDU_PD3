@@ -1,7 +1,21 @@
+namesplot <- function(){
 namesBD <- as.data.frame(table(BadgesBD[,'Name']),stringsAsFactors = FALSE)
 namesCH <- as.data.frame(table(BadgesCH[,'X_Name']),stringsAsFactors = FALSE)
 namesJD <- as.data.frame(table(BadgesJD[,'Name']),stringsAsFactors = FALSE)
 merged <- merge(merge(namesBD,namesCH, by = 'Var1'),namesJD, by='Var1')
 colnames(merged) <- c('Name','Buddhism','Christianity','Judaism')
-merged <- merged %>% arrange(desc(Buddhism),desc(Christianity),desc(Judaism))
-merged
+merged <- filter(merged, merged$Buddhism>50 & merged$Christianity> 50 & merged$Judaism > 50)
+merged <- subset(merged, Name !='Enthusiast' & Name !='Excavator'& Name !='Organizer'& Name !='Quorum' & 
+                   Name !='Curious'& Name !='Citizen Patrol' & Name != 'Announcer' & 
+                   Name !='Critic' & Name != 'Famous Question' &
+                   Name !='Custodian')
+
+namebud <- ggplot(merged, aes(x=Name,y=Buddhism)) + geom_bar(stat='identity',fill = 'darkolivegreen4') + 
+            scale_x_discrete(guide= guide_axis(angle = 50)) +ggtitle('Buddhism')+ labs(x=NULL, y="Count") + ylim(0,8400)
+namechr <- ggplot(merged, aes(x=Name,y=Christianity)) + geom_bar(stat='identity',fill = 'royalblue1') +
+            scale_x_discrete(guide= guide_axis(angle = 50)) + ggtitle('Christianity') +labs(x=NULL, y="Count")
+namejud <- ggplot(merged, aes(x=Name,y=Judaism)) + geom_bar(stat='identity',fill = 'orchid3') +
+            scale_x_discrete(guide= guide_axis(angle = 50)) + ggtitle('Judaism') + labs(x=NULL, y="Count") +ylim(0,8400)
+
+return(multiplot(namebud,namechr,namejud))
+}
