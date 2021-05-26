@@ -1,5 +1,28 @@
-#Tu licze liczbe dzienna postow################################ 
+#Tu licze liczbe dzienna postow na dany dzien roku suma postow na ta date################################ 
 posty_dzienne <- function(PostsCH) {
+  data <- PostsCH %>%
+    select(CreationDate)
+  
+  data <- format(as.POSIXct(strptime(data$CreationDate,"%Y-%m-%d %H:%M:%S", tz="")), format = "%m-%d")
+  
+  data <- as.data.frame(data)
+  
+  pom <- table(data)
+  pomo <- as_data_frame(pom, StringsAsFactors = FALSE)
+  colnames(pomo) <- c("Date","Count")
+  
+  
+  wykresik <- ggplot(pomo, aes(x=Date, y=Count)) + geom_bar(stat = "identity", color = "royalblue1", fill=rgb(0.6,0.420,0.2137,1), alpha = 0.5) + 
+    ggtitle("Number of posts per day") + scale_x_discrete(breaks = c("01-01","02-01","03-01","04-01","05-01","06-01",
+                                                                     "07-01","08-01","09-01","10-01","11-01","12-01"),
+                                                          labels = c("January","February","March","April","May","June","July","August","September",
+                                                                     "October","November","December"))
+  
+  return(wykresik)
+}
+################################################
+A tutaj ogolnie przez caly czas trwania forum:
+posty_dzienne_ogolne <- function(PostsCH) {
   data <- PostsCH %>%
     select(CreationDate)
   
@@ -10,10 +33,11 @@ posty_dzienne <- function(PostsCH) {
   pom <- table(data)
   pomo <- as_data_frame(pom, StringsAsFactors = FALSE)
   pomo$data <- stri_datetime_parse(pomo$data,format = 'yyyy-MM-dd')
+  colnames(pomo) <- c("Date","Count")
   
-  wykresik <- ggplot(pomo, aes(x=data, y=n)) + geom_bar(stat = "identity", color = "blue", fill=rgb(0.1,0.8,0.1,0.7), alpha = 0.5) + 
-  ggtitle("Number of posts per day")
+  wykresik <- ggplot(pomo, aes(x=Date, y=Count)) + geom_bar(stat = "identity", color = "royalblue1", fill=rgb(0.8,0.8,0.8,1), alpha = 0.5) + 
+    ggtitle("Number of posts per day")
   
   return(wykresik)
 }
-################################################
+#########################
