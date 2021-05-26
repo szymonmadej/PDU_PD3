@@ -1,4 +1,8 @@
-daysoftheweek <- function(PostsCH) {
+### Ta funkcja pokazuje liczbe postow na konkretny dzien tygodnia
+library(ggplot2)
+library(stringi)
+library(dplyr)
+daysoftheweek <- function(PostsCH,z,y) {
   
   str2date <- function(x){
     as.POSIXlt(stri_replace_all_regex(x, "(.*)\\T(.*)?\\.(\\d)", "$1 $2"),
@@ -17,7 +21,14 @@ daysoftheweek <- function(PostsCH) {
   pom <- table(dni_tygodnia)
   pomoc <- as.data.frame(pom)
   pomoc$dni_tygodnia <- factor(pomoc$dni_tygodnia, levels = c("Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"))
-  wykresik <- ggplot(pomoc, aes(x=dni_tygodnia, y=Freq)) + geom_bar(stat = "identity", color = "blue", fill=rgb(0.7,0.1,0.1,0.7)) + 
-  ggtitle("Posts on certain days of the week")
+  wykresik <- ggplot(pomoc, aes(x=dni_tygodnia, y=Freq)) + geom_bar(stat = "identity", fill=y) + 
+    ggtitle(z)
   return(wykresik)
 }
+
+
+CH <- daysoftheweek(PostsCH, "Christianity","royalblue1")
+BD <- daysoftheweek(PostsBD,"Buddhism","darkolivegreen4")
+JD <- daysoftheweek(PostsJD,"Judaizm","orchid3")
+
+multiplot(CH,BD,JD)
