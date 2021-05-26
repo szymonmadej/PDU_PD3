@@ -1,4 +1,4 @@
- Number_of_badges <- function(BadgesBD, UsersBD,x,y) {
+Number_of_badges <- function(BadgesBD, UsersBD,x,y) {
   nazwy <- BadgesBD %>%
     select(UserId) %>%
     add_count(UserId)
@@ -15,8 +15,8 @@
   wykresik <- ggplot(polaczone, aes(x=Number_of_Badges, y=Reputation)) + geom_point(color = x) + ggtitle(y)
   wykresik
 }  
-bd <- Number_of_badges(BadgesBD, UsersBD,'red',"buddhism")
-jd <- Number_of_badges(BadgesJD, UsersJD,'royalblue1', "judaism")
-ch <- Number_of_badges(BadgesCH, UsersCH, 'purple', "christianity")
+bd <- Number_of_badges(BadgesBD, UsersBD,'darkolivegreen4',"buddhism")
+jd <- Number_of_badges(BadgesJD, UsersJD,'orchid3', "judaism")
+ch <- Number_of_badges(BadgesCH, UsersCH, 'royalblue1', "christianity")
 
 multiplot(ch, bd, jd) 
