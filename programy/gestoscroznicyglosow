@@ -1,8 +1,9 @@
+gestoscroznicyglosow <- function(){
 upvotesBD <- VotesBD %>%
               select(PostId,VoteTypeId)%>%
               filter(VoteTypeId==2) %>%
               group_by(PostId) %>%
-              count(VoteTypeId)%>%                    
+              count(VoteTypeId)%>%
               rename('NumberofUpvotes'=n )
 downvotesBD <-VotesBD %>%
               select(PostId,VoteTypeId)%>%
@@ -12,6 +13,7 @@ downvotesBD <-VotesBD %>%
               rename('NumberofDownvotes'=n )        
 mergedBD <- inner_join(upvotesBD,downvotesBD, by='PostId') %>%
             mutate(Difference = NumberofUpvotes - NumberofDownvotes)
+mean(mergedBD$Difference)
 
 upvotesCH <- VotesCH %>%
   select(PostId,VoteTypeId)%>%
@@ -27,6 +29,7 @@ downvotesCH <-VotesCH %>%
   rename('NumberofDownvotes'=n )        
 mergedCH <- inner_join(upvotesCH,downvotesCH, by='PostId') %>%
   mutate(Difference = NumberofUpvotes - NumberofDownvotes)
+mean(mergedCH$Difference)
 
 
 upvotesJD <- VotesJD %>%
@@ -43,8 +46,7 @@ downvotesJD <-VotesJD %>%
   rename('NumberofDownvotes'=n )        
 mergedJD <- inner_join(upvotesJD,downvotesJD, by='PostId') %>%
   mutate(Difference = NumberofUpvotes - NumberofDownvotes)
-
-
+mean(mergedJD$Difference)
 mergedBD <- unlist(mergedBD["Difference"])
 mergedCH <- unlist(mergedCH["Difference"])
 mergedJD <- unlist(mergedJD["Difference"])
@@ -64,4 +66,5 @@ wykres<- ggplot(data,aes(x=value,fill=variable))+
                               labs(x='Difference') + ggtitle("Density of difference between Upvotes and Downvotes")+
                               xlim(-10, 25)
 
-wykres
+return(wykres)
+}
