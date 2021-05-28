@@ -1,0 +1,125 @@
+---
+title: "Religie na świecie"
+author: "Jędrzej Ruciński, Szymon Madej, Grzegorz Pióro"
+output: 
+  ioslides_presentation:
+    widescreen: true
+    logo: 'MicrosoftTeams-image.png'
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+library(dplyr)
+library(magrittr)
+library(stringi)
+library(ggplot2)
+library(colorDF)
+library(readr)
+library(grid)
+library(lubridate)
+library(reshape2)
+```
+
+```{r}
+source('religia.R')
+```
+
+
+## Biblioteki i używane funkcje
+
+### Użyte biblioteki:  
+  - dplyr  
+  - stringi  
+  - ggplot2  
+  - colorDF  
+  - readr  
+  - reshape2  
+  - grid   
+  - lubridate  
+  
+  
+### Użyte funkcje:    
+  - xml2csv by Marek Gągolewski    
+  - multiplot z forum <a href = 'https://stackoverflow.com/questions/24387376/r-error-could-not-find-function-multiplot-using-cookbook-example' > StackOverflow </a>
+
+## Liczba postów na dzień
+<div align='center'>
+```{r,cache=TRUE}
+ multiplot(posty_dzienne_ogolne(PostsCH,"royalblue1","Christianity"),posty_dzienne_ogolne(PostsBD,"darkolivegreen4",'Buddhism'),posty_dzienne_ogolne(PostsJD,"orchid3","Judaism"))
+```
+</div>
+
+## Liczba postów na poszczególny dzień roku
+
+<div align='center'>
+```{r,cache=TRUE}
+ch <- posty_dzienne(PostsCH,"royalblue1",'Christianity')
+bd <- posty_dzienne(PostsBD,"darkolivegreen4",'Buddhism')
+jd <- posty_dzienne(PostsJD,"orchid3",'Judaism')
+multiplot(ch,bd,jd)
+```
+</div>
+
+## Liczba postów na dzień tygodnia
+
+<div align='center'>
+```{r,cache=TRUE}
+CH <- daysoftheweek(PostsCH, "royalblue1","Christianity")
+BD <- daysoftheweek(PostsBD,"darkolivegreen4","Buddhism")
+JD <- daysoftheweek(PostsJD,"orchid3","Judaism")
+
+multiplot(CH,BD,JD)
+```
+</div>
+
+## Liczba komentarzy na dzień tygodnia
+
+<div align='center'>
+```{r,cache=TRUE}
+ch<- comments_number_by_day(PostsCH,CommentsCH,'royalblue1','Christianity' )
+bd<- comments_number_by_day(PostsBD,CommentsBD,'darkolivegreen4','Buddhism' )
+jd<- comments_number_by_day(PostsJD,CommentsJD,'orchid3','Judaism' )
+multiplot(ch,bd,jd)
+```
+</div>
+
+## Tagi na poszczególnych forach
+
+<div align='center'>
+```{r,cache=TRUE}
+tagsreligion()
+```
+</div>
+
+## Zamknięte i zablokowane posty
+
+<div align='center'>
+```{r,cache=TRUE}
+multiplot(postyzamkniete(),postyzablokowane(), cols=2)
+```
+</div>
+
+## Gęstości Grzesia(1)
+
+<div align='center'>
+```{r,message=FALSE,warning=FALSE,cache=TRUE}
+gestoscroznicyglosow()
+```
+</div>
+
+## Gęstości Grzesia(2)
+
+<div align='center'>
+```{r,message=FALSE,warning=FALSE,cache=TRUE}
+gestoscbadges()
+```
+</div>
+
+## Gęstości Grzesia(3)
+
+<div align='center'>
+```{r,message=FALSE,warning=FALSE,cache=TRUE}
+gestoscreputacji()
+```
+</div>
+
