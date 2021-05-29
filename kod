@@ -1,0 +1,444 @@
+multiplot <- function(..., plotlist=NULL, file, cols=1, layout=NULL) {
+  require(grid)
+  
+  # Make a list from the ... arguments and plotlist
+  plots <- c(list(...), plotlist)
+  
+  numPlots = length(plots)
+  
+  # If layout is NULL, then use 'cols' to determine layout
+  if (is.null(layout)) {
+    # Make the panel
+    # ncol: Number of columns of plots
+    # nrow: Number of rows needed, calculated from # of cols
+    layout <- matrix(seq(1, cols * ceiling(numPlots/cols)),
+                     ncol = cols, nrow = ceiling(numPlots/cols))
+  }
+  
+  if (numPlots==1) {
+    print(plots[[1]])
+    
+  } else {
+    # Set up the page
+    grid.newpage()
+    pushViewport(viewport(layout = grid.layout(nrow(layout), ncol(layout))))
+    
+    # Make each plot, in the correct location
+    for (i in 1:numPlots) {
+      # Get the i,j matrix positions of the regions that contain this subplot
+      matchidx <- as.data.frame(which(layout == i, arr.ind = TRUE))
+      
+      print(plots[[i]], vp = viewport(layout.pos.row = matchidx$row,
+                                      layout.pos.col = matchidx$col))
+    }
+  }
+}
+BadgesBD <- read.csv('Buddyzm/Badges.xml.csv')
+CommentsBD <- read.csv('Buddyzm/Comments.xml.csv')
+PostHistoryBD <- read.csv('Buddyzm/PostHistory.xml.csv')
+PostLinksBD <- read.csv('Buddyzm/PostLinks.xml.csv')
+PostsBD <- read.csv('Buddyzm/Posts.xml.csv')
+TagsBD <- read.csv('Buddyzm/Tags.xml.csv')
+UsersBD <- read.csv('Buddyzm/Users.xml.csv')
+VotesBD <- read.csv('Buddyzm/Votes.xml.csv')
+
+BadgesCH <- read.csv('Christianity/Badges.csv')
+colnames(BadgesCH) <- c("Id",'UserId','Name','Date','Class','TagBased')
+CommentsCH <- read.csv('Christianity/Comments.csv')
+PostHistoryCH <- read.csv('Christianity/PostHistory.xml.csv')
+PostLinksCH <- read.csv('Christianity/PostLinks.xml.csv')
+PostsCH <- read.csv('Christianity/Posts.xml.csv')
+TagsCH <- read.csv('Christianity/Tags.xml.csv')
+UsersCH <- read.csv('Christianity/Users.xml.csv')
+VotesCH <- read.csv('Christianity/Votes.xml.csv')
+
+BadgesJD <- read.csv('Judaism/Badges.xml.csv')
+CommentsJD <- read.csv('Judaism/Comments.xml.csv')
+PostHistoryJD <- read.csv('Judaism/PostHistory.xml.csv')
+PostLinksJD <- read.csv('Judaism/PostLinks.xml.csv')
+PostsJD <- read.csv('Judaism/Posts.xml.csv')
+TagsJD <- read.csv('Judaism/Tags.xml.csv')
+UsersJD <- read.csv('Judaism/Users.xml.csv')
+VotesJD <- read.csv('Judaism/Votes.xml.csv')
+namesplot <- function(){
+namesBD <- as.data.frame(table(BadgesBD[,'Name']),stringsAsFactors = FALSE)
+namesCH <- as.data.frame(table(BadgesCH[,'X_Name']),stringsAsFactors = FALSE)
+namesJD <- as.data.frame(table(BadgesJD[,'Name']),stringsAsFactors = FALSE)
+merged <- merge(merge(namesBD,namesCH, by = 'Var1'),namesJD, by='Var1')
+colnames(merged) <- c('Name','Buddhism','Christianity','Judaism')
+merged <- filter(merged, merged$Buddhism>50 & merged$Christianity> 50 & merged$Judaism > 50)
+merged <- subset(merged, Name !='Enthusiast' & Name !='Excavator'& Name !='Organizer'& Name !='Quorum' & 
+                   Name !='Curious'& Name !='Citizen Patrol' & Name != 'Announcer' & 
+                   Name !='Critic' & Name != 'Famous Question' &
+                   Name !='Custodian')
+
+namebud <- ggplot(merged, aes(x=Name,y=Buddhism)) + geom_bar(stat='identity',fill = 'darkolivegreen4') + 
+            scale_x_discrete(guide= guide_axis(angle = 50)) +ggtitle('Buddhism')+ labs(x=NULL, y="Count") + ylim(0,8400)
+namechr <- ggplot(merged, aes(x=Name,y=Christianity)) + geom_bar(stat='identity',fill = 'royalblue1') +
+            scale_x_discrete(guide= guide_axis(angle = 50)) + ggtitle('Christianity') +labs(x=NULL, y="Count")
+namejud <- ggplot(merged, aes(x=Name,y=Judaism)) + geom_bar(stat='identity',fill = 'orchid3') +
+            scale_x_discrete(guide= guide_axis(angle = 50)) + ggtitle('Judaism') + labs(x=NULL, y="Count") +ylim(0,8400)
+
+return(multiplot(namebud,namechr,namejud))
+}
+
+
+posty_dzienne_ogolne <- function(PostsCH,x,y) {
+  
+  data <- as.data.frame(as.Date(str2date(PostsCH$CreationDate)))
+  
+  pom <- table(data)
+  pomo <- as.data.frame(pom, StringsAsFactors = FALSE)
+  
+  pomo$data <- stri_datetime_parse(pomo$data,format = 'yyyy-MM-dd')
+  
+  colnames(pomo) <- c("Date","Count")
+  
+  wykresik <- ggplot(pomo, aes(x=Date, y=Count)) + geom_bar(stat = "identity", color = x, fill=rgb(0.8,0.8,0.8,1), alpha = 0.5) +
+    ggtitle(y)
+  return(wykresik)
+}
+
+posty_dzienne <- function(PostsCH,x,y) {
+  data <- PostsCH %>%
+    select(CreationDate)
+  
+  data <- format(as.POSIXct(strptime(data$CreationDate,"%Y-%m-%dT%H:%M:%S", tz=""),format='%m-%d'))
+  data <- as_tibble(data)
+  data <- format(as.POSIXct(strptime(data$value,"%Y-%m-%d %H:%M:%S", tz="")), format = "%m-%d")
+  
+  pom <- table(data)
+  pomo <- as_tibble(pom, stringsAsFactors = FALSE)
+  colnames(pomo) <- c("Date","Count")
+  
+  
+  wykresik <- ggplot(pomo, aes(x=Date, y=Count)) + geom_bar(stat = "identity", color = x, fill=rgb(0.6,0.420,0.2137,1), alpha = 0.5) +
+    ggtitle(y) + scale_x_discrete(breaks = c("01-01","02-01","03-01","04-01","05-01","06-01",
+                                                                     "07-01","08-01","09-01","10-01","11-01","12-01"),
+                                                          labels = c("January","February","March","April","May","June","July","August","September",
+                                                                     "October","November","December"))
+  
+  return(wykresik)
+}
+
+postyzamkniete <- function(){
+postyzamknieteBD <- PostHistoryBD[PostHistoryBD$PostHistoryTypeId==10,]
+postyzamknieteCH <- PostHistoryCH[PostHistoryCH$PostHistoryTypeId==10,]
+postyzamknieteJD <- PostHistoryJD[PostHistoryJD$PostHistoryTypeId==10,]
+
+danedowykresu <- data.frame(c('Buddhism','Christianity','Judaism'),c(nrow(postyzamknieteBD),nrow(postyzamknieteCH),nrow(postyzamknieteJD)))
+colnames(danedowykresu) <- c("Religion","Number of closed posts")
+danedowykresu
+colour <- c('darkolivegreen4','royalblue1','orchid3')
+plot <- ggplot(danedowykresu,aes(x=Religion,y=danedowykresu[,'Number of closed posts'])) + geom_bar(stat='identity',color=colour,fill=colour) + labs(y='Number of closed posts')+theme(legend.position="none") +ggtitle("Number of posts voted to be closed")
+return(plot)
+}
+postyzablokowane <- function(){
+postyzablokowaneBD <- PostHistoryBD[PostHistoryBD$PostHistoryTypeId==14,]
+postyzablokowaneCH <- PostHistoryCH[PostHistoryCH$PostHistoryTypeId==14,]
+postyzablokowaneJD <- PostHistoryJD[PostHistoryJD$PostHistoryTypeId==14,]
+
+danedowykresu <- data.frame(c('Buddhism','Christianity','Judaism'),c(nrow(postyzablokowaneBD),nrow(postyzablokowaneCH),nrow(postyzablokowaneJD)))
+colnames(danedowykresu) <- c("Religion","Number of locked posts")
+danedowykresu
+colour <- c('darkolivegreen4','royalblue1','orchid3')
+plot <- ggplot(danedowykresu,aes(x=Religion,y=danedowykresu[,'Number of locked posts'])) + geom_bar(stat='identity', color=colour,fill=colour) + labs(y='Number of locked posts')+theme(legend.position="none") + ggtitle("Number of posts locked by the moderator")
+plot
+}
+gestoscroznicyglosow <- function(){
+upvotesBD <- VotesBD %>%
+              select(PostId,VoteTypeId)%>%
+              filter(VoteTypeId==2) %>%
+              group_by(PostId) %>%
+              count(VoteTypeId)%>%
+              rename('NumberofUpvotes'=n )
+downvotesBD <-VotesBD %>%
+              select(PostId,VoteTypeId)%>%
+              filter(VoteTypeId==3) %>%
+              group_by(PostId) %>%
+              count(VoteTypeId)%>%
+              rename('NumberofDownvotes'=n )        
+mergedBD <- inner_join(upvotesBD,downvotesBD, by='PostId') %>%
+            mutate(Difference = NumberofUpvotes - NumberofDownvotes)
+
+upvotesCH <- VotesCH %>%
+  select(PostId,VoteTypeId)%>%
+  filter(VoteTypeId==2) %>%
+  group_by(PostId) %>%
+  count(VoteTypeId)%>%
+  rename('NumberofUpvotes'=n )
+downvotesCH <-VotesCH %>%
+  select(PostId,VoteTypeId)%>%
+  filter(VoteTypeId==3) %>%
+  group_by(PostId) %>%
+  count(VoteTypeId)%>%
+  rename('NumberofDownvotes'=n )        
+mergedCH <- inner_join(upvotesCH,downvotesCH, by='PostId') %>%
+  mutate(Difference = NumberofUpvotes - NumberofDownvotes)
+
+upvotesJD <- VotesJD %>%
+  select(PostId,VoteTypeId)%>%
+  filter(VoteTypeId==2) %>%
+  group_by(PostId) %>%
+  count(VoteTypeId)%>%
+  rename('NumberofUpvotes'=n )
+downvotesJD <-VotesJD %>%
+  select(PostId,VoteTypeId)%>%
+  filter(VoteTypeId==3) %>%
+  group_by(PostId) %>%
+  count(VoteTypeId)%>%
+  rename('NumberofDownvotes'=n )        
+mergedJD <- inner_join(upvotesJD,downvotesJD, by='PostId') %>%
+  mutate(Difference = NumberofUpvotes - NumberofDownvotes)
+
+
+mergedBD <- unlist(mergedBD["Difference"])
+mergedCH <- unlist(mergedCH["Difference"])
+mergedJD <- unlist(mergedJD["Difference"])
+
+max.len = max(length(mergedBD),length(mergedCH),length(mergedJD))
+mergedBD <- c(mergedBD, rep(NA, max.len - length(mergedBD)))
+mergedCH <- c(mergedCH, rep(NA, max.len - length(mergedCH)))
+mergedJD <- c(mergedJD, rep(NA, max.len - length(mergedJD)))
+x <- data.frame(mergedBD,mergedCH,mergedJD)
+
+
+data <- melt(x)
+wykres<- ggplot(data,aes(x=value,fill=variable))+ 
+            geom_density(alpha=0.25) + 
+            scale_fill_discrete(name="Legend",
+                              labels=c("Buddhism",'Christianity','Judaism')) +
+                              labs(x='Difference') + ggtitle("Density of difference between Upvotes and Downvotes")+
+                              xlim(-10, 25)
+
+return(wykres)
+}
+
+gestoscreputacji <- function(){
+  usersrepBD <- UsersBD %>%
+    select(Reputation)
+  usersrepCH <- UsersCH %>%
+    select(Reputation)
+  usersrepJD <- UsersJD %>%
+    select(Reputation)
+usersrepBD <- unlist(usersrepBD)
+usersrepCH <- unlist(usersrepCH)
+usersrepJD <- unlist(usersrepJD)
+
+max.len = max(length(usersrepBD),length(usersrepCH),length(usersrepJD))
+usersrepBD <- c(usersrepBD, rep(NA, max.len - length(usersrepBD)))
+usersrepCH <- c(usersrepCH, rep(NA, max.len - length(usersrepCH)))
+usersrepJD <- c(usersrepJD, rep(NA, max.len - length(usersrepJD)))
+
+x <- data.frame(usersrepBD,usersrepCH,usersrepJD)
+data <- melt(x)
+
+wykresreputacji<- ggplot(data,aes(x=value,fill=variable))+ 
+  geom_density(alpha=0.25) + 
+  scale_fill_discrete(name="Legend",
+                      labels=c("Buddhism",'Christianity','Judaism')) +
+  labs(x='Reputation') + ggtitle("Density of Reputation of Users") + xlim(1,100)
+return(wykresreputacji)
+}
+str2date <- function(x){
+  #string na date
+  as.POSIXlt(stri_replace_all_regex(x, "(.*)\\T(.*)?\\.(\\d)", "$1 $2"),
+             tz = "GMT", format = "%Y-%m-%d %H:%M:%S")
+}
+str2hour <- function(date){
+  #string na godzine
+  format(as.POSIXct(strptime(str2date(date),"%Y-%m-%d %H:%M:%S",tz="")) ,format = "%H")
+}
+
+comments_number_by_hour <- function(PostsCH, CommentsCH,y,z){
+  #funkcja licząca liczbę postów na godzinę dnia
+  #wejściowe to ramki danych Posts* i Comments*
+  colnames(CommentsCH) <- c("Id","PostId","Score","Text","CreationDate","UserId","ContentLicense","UserDisplayName")
+  com <- PostsCH %>% left_join(CommentsCH, by = c("Id" = "PostId"))
+  com <- com %>%
+    filter(PostTypeId == 1)%>%
+    select(Id, CreationDate.x, ViewCount,CommentCount, Score.x, CreationDate.y) %>%
+    mutate(Comment_hour = str2hour(CreationDate.y)) %>%
+    filter(Comment_hour != "NA")
+  com <- com %>%
+    group_by(Comment_hour)%>%
+    summarise(Com_per_hour = n())
+  
+  
+  
+  wykresik <- ggplot(com, aes(x=Comment_hour, y=Com_per_hour)) + geom_bar(stat = "identity", fill=y) +
+    ggtitle(z)
+  return(wykresik)
+}
+
+comments_number_by_day <- function(PostsCH, CommentsCH,y,z){
+  #funkcja licząca liczbę postów na dzień tygodnia
+  #wejściowe to ramki danych Posts* i Comments*
+  colnames(CommentsCH) <- c("Id","PostId","Score","Text","CreationDate","UserId","ContentLicense","UserDisplayName")
+  com <- PostsCH %>% left_join(CommentsCH, by = c("Id" = "PostId"))
+  com <- com %>%
+    filter(PostTypeId == 1)%>%
+    select(Id, CreationDate.x, ViewCount,CommentCount, Score.x, CreationDate.y) %>%
+    mutate(Day = weekdays(str2date(CreationDate.y))) %>%
+    filter(Day != "NA")
+  com <- com %>%
+    group_by(Day)%>%
+    summarise(Com_per_day = n())
+  com$Day <- c('Thursday','Sunday','Friday','Monday','Saturday','Wednesday','Tuesday')
+  com$Day <- factor(com$Day, levels = c("Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"))
+  wykresik <- ggplot(com, aes(x=Day, y=Com_per_day)) + geom_bar(stat = "identity", fill=y) +
+    ggtitle(z)
+  return(wykresik)
+}
+
+
+respond_time <- function(PostsCH, CommentsCH){
+  com <- PostsCH %>% left_join(CommentsCH, by = c("Id" = "PostId"))
+  
+  com <- com %>%
+    filter(PostTypeId == 1)%>%
+    select(Id, CreationDate.x, ViewCount,CommentCount, Score.y, CreationDate.y) %>%
+    mutate(Diff_time = round(difftime(str2date(CreationDate.y),str2date(CreationDate.x)
+                                      , units = "days"))) %>%
+    mutate(Day = weekdays(str2date(CreationDate.y)))
+  com <- com %>%
+    group_by(Day)%>%
+    summarise(avg_com_time = mean(Diff_time))
+}
+
+daysoftheweek <- function(PostsCH,y,z) {
+  
+  str2date <- function(x){
+    as.POSIXlt(stri_replace_all_regex(x, "(.*)\\T(.*)?\\.(\\d)", "$1 $2"),
+               tz = "GMT", format = "%Y-%m-%d %H:%M:%S")
+  }
+  
+  
+  x <- str2date(PostsCH$CreationDate)
+  x <- as.data.frame(x)
+  
+  com <- x %>%
+    mutate(day = weekdays(str2date(x)))
+  colnames(com) <- c("Date","Day_of_the_week")
+  dni_tygodnia <- com$Day_of_the_week
+  dni_tygodnia <- as.data.frame(dni_tygodnia)
+  pom <- table(dni_tygodnia)
+  pomoc <- as.data.frame(pom)
+  pomoc$dni_tygodnia <- c('Thursday','Sunday','Friday','Monday','Saturday','Wednesday','Tuesday')
+  pomoc$dni_tygodnia <- factor(pomoc$dni_tygodnia, levels = c("Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"))
+  wykresik <- ggplot(pomoc, aes(x=dni_tygodnia, y=Freq)) + geom_bar(stat = "identity", fill=y) + 
+    ggtitle(z)
+  return(wykresik)
+}
+tagsreligion <- function(){
+tagiBD <- TagsBD[,c('TagName','Count')]
+tagiCH <- TagsCH[,c('TagName','Count')]
+tagiJD <- TagsJD[,c('TagName','Count')]
+
+tags <- inner_join(tagiBD, tagiCH, by = 'TagName')
+tagsall <- inner_join(tags,tagiJD, by = "TagName") %>%
+  rename(Buddhism=Count.x,Christianity=Count.y,Judaism=Count)%>%
+  arrange(desc(Christianity))
+
+tagsbud <- ggplot(tagsall, aes(x=TagName,y=Buddhism)) + geom_bar(stat='identity',fill = 'darkolivegreen4') + 
+  scale_x_discrete(guide= guide_axis(angle = 50)) +ggtitle('Buddhism')+ labs(x=NULL, y="Count")
+tagschr <- ggplot(tagsall, aes(x=TagName,y=Christianity)) + geom_bar(stat='identity',fill = 'royalblue1') +
+  scale_x_discrete(guide= guide_axis(angle = 50)) + ggtitle('Christianity') +labs(x=NULL, y="Count")
+tagsjud <- ggplot(tagsall, aes(x=TagName,y=Judaism)) + geom_bar(stat='identity',fill = 'orchid3') +
+  scale_x_discrete(guide= guide_axis(angle = 50)) + ggtitle('Judaism') + labs(x=NULL, y="Count")
+
+multiplot(tagsbud,tagschr,tagsjud)
+}
+
+gestoscbadges <- function(){
+BadgesCH
+nazwyBD <- BadgesBD %>%
+  select(UserId,Name) %>%
+  group_by(UserId) %>%
+  count(UserId) %>%
+  rename(Count = n)
+nazwyCH <- BadgesCH %>%
+  select(UserId,Name) %>%
+  group_by(UserId) %>%
+  count(UserId) %>%
+  rename(Count =n,UserId=UserId)
+nazwyJD <- BadgesJD %>%
+  select(UserId,Name) %>%
+  group_by(UserId) %>%
+  count(UserId) %>%
+  rename(Count = n)
+
+gestoscnazwyBD <- ggplot(nazwyBD,aes(Count)) + geom_density(color='darkolivegreen4') +xlim(0,100) +ylim(0,2)
+
+gestoscnazwyCH <- ggplot(nazwyCH,aes(Count)) + geom_density(color='royalblue1')+xlim(0,100)
+
+gestoscnazwyJD <- ggplot(nazwyJD,aes(Count)) + geom_density(color='orchid3')+xlim(0,100)+ylim(0,2)
+
+return(multiplot(gestoscnazwyBD,gestoscnazwyCH,gestoscnazwyJD))
+}
+
+gestoscbadges()
+
+Pizza1 <- function(){
+  joined <- PostsJD %>% left_join(CommentsJD, by = c("Id" = "PostId"))
+PizzaThing <- joined %>%
+  filter(Id == 1818) %>%
+  select(Body, Title, Tags, Text)
+}
+Pizza2 <- function(){
+  joined <- PostsJD %>% left_join(CommentsJD, by = c("Id" = "PostId"))
+  PizzaThing <- joined %>%
+    filter(Id == 1819) %>%
+    select(Body, Title, Tags, Text)
+}
+
+
+mostcrazy <- function(PostsBD,CommentsBD){
+  #funkcja zwracająca ramkę danych gdzie są posty i komentarze do nich osoby która dodała najwięcej postów jednego dnia
+  #potrzebny tylko dplyr żadnej innej funkcji nie trzeba
+  mostcrazyguy <- PostsBD %>%
+    filter(PostTypeId == 1) %>%
+    mutate(CreDate = as.Date(CreationDate)) %>%
+    select(Body, OwnerUserId,CreDate) %>%
+    group_by(OwnerUserId, CreDate) %>%
+    summarise(NumberOfPosts = n(), .groups = "drop")
+  mostcrazyguy <- mostcrazyguy[!is.na(mostcrazyguy$OwnerUserId),]
+  mostcrazyguy <- mostcrazyguy %>%
+    arrange(desc(NumberOfPosts))
+  temp <- mostcrazyguy[1,]
+  mostcrazyguy <- PostsBD %>%
+    filter(PostTypeId == 1) %>%
+    mutate(CreDate = as.Date(CreationDate)) 
+  mostcrazyguy <- mostcrazyguy %>%
+    filter(OwnerUserId == temp$OwnerUserId) %>%
+    filter(CreDate == temp$CreDate) %>%
+    select(Id, Body, Title, Tags,CreationDate,AnswerCount,OwnerUserId)
+  mostcrazyguy <-mostcrazyguy %>% full_join(CommentsBD, by = c("Id" = "PostId"))
+  mostcrazyguy <-mostcrazyguy %>%
+    filter(!is.na(Body)) %>%
+    select(Body, Title, Tags, Text, CreationDate.x, OwnerUserId)
+}
+
+
+
+Number_of_badges <- function(BadgesBD, UsersBD,x,y) {
+  nazwy <- BadgesBD %>%
+    select(UserId) %>%
+    add_count(UserId)
+  unique(nazwy)
+  colnames(nazwy) <- c("UserId", "Number_of_Badges")
+  reputacja <- UsersBD %>%
+    select(Id, Reputation)
+  polaczone <- inner_join(reputacja, nazwy, by = c("Id" = "UserId"))
+  polaczone <- unique(polaczone)
+  polaczone <- polaczone %>%
+    arrange(desc(Reputation))
+  polaczone <- polaczone %>%
+    select(Reputation, Number_of_Badges)
+  line <- lm(Reputation~Number_of_Badges,data=polaczone)
+  linia <- as.data.frame(line[1])
+  row.names(linia) <- c('Intercept','Slope')
+  print(linia)
+  wykresik <- ggplot(polaczone, aes(x=Number_of_Badges, y=Reputation)) + geom_point(color = x) + ggtitle(y) + geom_smooth(method=lm, color = 'firebrick3',se=FALSE)
+  wykresik
+}  
