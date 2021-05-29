@@ -1,0 +1,11 @@
+najwiecejpostowdata <- function(PostsCH){
+  data <- as.data.frame(as.Date(str2date(PostsJD$CreationDate)))
+  
+  pom <- table(data)
+  pomo <- as_tibble(pom, StringsAsFactors = FALSE)
+  pomo <- pomo %>%
+    arrange(desc(n)) %>%
+    slice(1)
+  colnames(pomo) <- c("Date","Number of Posts")
+  pomo
+}
