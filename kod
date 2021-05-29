@@ -62,7 +62,7 @@ UsersJD <- read.csv('Judaism/Users.xml.csv')
 VotesJD <- read.csv('Judaism/Votes.xml.csv')
 namesplot <- function(){
 namesBD <- as.data.frame(table(BadgesBD[,'Name']),stringsAsFactors = FALSE)
-namesCH <- as.data.frame(table(BadgesCH[,'X_Name']),stringsAsFactors = FALSE)
+namesCH <- as.data.frame(table(BadgesCH[,'Name']),stringsAsFactors = FALSE)
 namesJD <- as.data.frame(table(BadgesJD[,'Name']),stringsAsFactors = FALSE)
 merged <- merge(merge(namesBD,namesCH, by = 'Var1'),namesJD, by='Var1')
 colnames(merged) <- c('Name','Buddhism','Christianity','Judaism')
@@ -142,7 +142,7 @@ danedowykresu <- data.frame(c('Buddhism','Christianity','Judaism'),c(nrow(postyz
 colnames(danedowykresu) <- c("Religion","Number of locked posts")
 danedowykresu
 colour <- c('darkolivegreen4','royalblue1','orchid3')
-plot <- ggplot(danedowykresu,aes(x=Religion,y=danedowykresu[,'Number of locked posts'])) + geom_bar(stat='identity', color=colour,fill=colour) + labs(y='Number of locked posts')+theme(legend.position="none") + ggtitle("Number of posts locked by the moderator")
+plot <- ggplot(danedowykresu,aes(x=Religion,y=danedowykresu[,'Number of locked posts'])) + geom_bar(stat='identity', color=colour,fill=colour) + labs(y='Number of locked posts')+theme(legend.position="none") + ggtitle("Number of moderator-blocked posts")
 plot
 }
 gestoscroznicyglosow <- function(){
@@ -377,7 +377,7 @@ gestoscnazwyJD <- ggplot(nazwyJD,aes(Count)) + geom_density(color='orchid3')+xli
 return(multiplot(gestoscnazwyBD,gestoscnazwyCH,gestoscnazwyJD))
 }
 
-gestoscbadges()
+
 
 Pizza1 <- function(){
   joined <- PostsJD %>% left_join(CommentsJD, by = c("Id" = "PostId"))
@@ -436,9 +436,46 @@ Number_of_badges <- function(BadgesBD, UsersBD,x,y) {
   polaczone <- polaczone %>%
     select(Reputation, Number_of_Badges)
   line <- lm(Reputation~Number_of_Badges,data=polaczone)
-  linia <- as.data.frame(line[1])
-  row.names(linia) <- c('Intercept','Slope')
-  print(linia)
+  
   wykresik <- ggplot(polaczone, aes(x=Number_of_Badges, y=Reputation)) + geom_point(color = x) + ggtitle(y) + geom_smooth(method=lm, color = 'firebrick3',se=FALSE)
   wykresik
 }  
+linie <- function(BadgesBD,UsersBD){
+    nazwy <- BadgesBD %>%
+      select(UserId) %>%
+      add_count(UserId)
+    unique(nazwy)
+    colnames(nazwy) <- c("UserId", "Number_of_Badges")
+    reputacja <- UsersBD %>%
+      select(Id, Reputation)
+    polaczone <- inner_join(reputacja, nazwy, by = c("Id" = "UserId"))
+    polaczone <- unique(polaczone)
+    polaczone <- polaczone %>%
+      arrange(desc(Reputation))
+    polaczone <- polaczone %>%
+      select(Reputation, Number_of_Badges)
+    line <- lm(Reputation~Number_of_Badges,data=polaczone)
+    as.data.frame(line[1])
+}  
+
+tableline <- function(){
+bd <- linie(BadgesBD,UsersBD)
+ch <- linie(BadgesCH,UsersCH)
+jd <- linie(BadgesJD,UsersJD)
+merged <- cbind(bd,ch,jd)
+colnames(merged) <- c('Buddhism','Christianity','Judaism')
+row.names(merged) <- c("Intercept",'Slope')
+merged <- merged[2,]
+round(merged,digits=0)
+}
+najwiecejpostowdata <- function(PostsCH){
+  data <- as.data.frame(as.Date(str2date(PostsJD$CreationDate)))
+  
+  pom <- table(data)
+  pomo <- as_tibble(pom, StringsAsFactors = FALSE)
+  pomo <- pomo %>%
+    arrange(desc(n)) %>%
+    slice(1)
+  colnames(pomo) <- c("Date","Number of Posts")
+  pomo
+}
