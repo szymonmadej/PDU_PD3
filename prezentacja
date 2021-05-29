@@ -18,6 +18,7 @@ library(readr)
 library(grid)
 library(lubridate)
 library(reshape2)
+library(kableExtra)
 ```
 
 ```{r}
@@ -44,7 +45,7 @@ source('religia.R')
 
 ## Liczba postów na dzień
 <div align='center'>
-```{r,cache=TRUE}
+```{r,cache = TRUE}
  multiplot(posty_dzienne_ogolne(PostsCH,"royalblue1","Christianity"),posty_dzienne_ogolne(PostsBD,"darkolivegreen4",'Buddhism'),posty_dzienne_ogolne(PostsJD,"orchid3","Judaism"))
 ```
 </div>
@@ -52,7 +53,7 @@ source('religia.R')
 ## Liczba postów na poszczególny dzień roku
 
 <div align='center'>
-```{r,cache=TRUE}
+```{r,cache = TRUE}
 ch <- posty_dzienne(PostsCH,"royalblue1",'Christianity')
 bd <- posty_dzienne(PostsBD,"darkolivegreen4",'Buddhism')
 jd <- posty_dzienne(PostsJD,"orchid3",'Judaism')
@@ -63,7 +64,7 @@ multiplot(ch,bd,jd)
 ## Liczba postów na dzień tygodnia
 
 <div align='center'>
-```{r,cache=TRUE}
+```{r,cache = TRUE,fig.dim=c(8,5.8)}
 CH <- daysoftheweek(PostsCH, "royalblue1","Christianity")
 BD <- daysoftheweek(PostsBD,"darkolivegreen4","Buddhism")
 JD <- daysoftheweek(PostsJD,"orchid3","Judaism")
@@ -75,7 +76,7 @@ multiplot(CH,BD,JD)
 ## Liczba komentarzy na dzień tygodnia
 
 <div align='center'>
-```{r,cache=TRUE}
+```{r,cache = TRUE}
 ch<- comments_number_by_day(PostsCH,CommentsCH,'royalblue1','Christianity' )
 bd<- comments_number_by_day(PostsBD,CommentsBD,'darkolivegreen4','Buddhism' )
 jd<- comments_number_by_day(PostsJD,CommentsJD,'orchid3','Judaism' )
@@ -86,7 +87,7 @@ multiplot(ch,bd,jd)
 ## Tagi na poszczególnych forach
 
 <div align='center'>
-```{r,cache=TRUE}
+```{r,cache = TRUE}
 tagsreligion()
 ```
 </div>
@@ -94,12 +95,12 @@ tagsreligion()
 ## Zamknięte i zablokowane posty
 
 <div align='center'>
-```{r,cache=TRUE}
+```{r,cache = TRUE}
 multiplot(postyzamkniete(),postyzablokowane(), cols=2)
 ```
 </div>
 
-## Gęstości Grzesia(1)
+## Gęstości Grzesia (1)
 
 <div align='center'>
 ```{r,message=FALSE,warning=FALSE,cache=TRUE}
@@ -107,7 +108,7 @@ gestoscroznicyglosow()
 ```
 </div>
 
-## Gęstości Grzesia(2)
+## Gęstości Grzesia (2)
 
 <div align='center'>
 ```{r,message=FALSE,warning=FALSE,cache=TRUE}
@@ -115,11 +116,51 @@ gestoscbadges()
 ```
 </div>
 
-## Gęstości Grzesia(3)
 
+
+## Gęstości Grzesia (3)
+  
 <div align='center'>
 ```{r,message=FALSE,warning=FALSE,cache=TRUE}
 gestoscreputacji()
 ```
 </div>
 
+## Typy użytkowników
+
+<div align='center'>
+```{r,cache=TRUE}
+namesplot()
+```
+</div>
+
+## Zależność odznak od reputacji użytkowników
+
+<div align='center', height='400',width='500'>
+```{r,warning=FALSE,message=FALSE}
+multiplot(Number_of_badges(BadgesCH,UsersCH,'royalblue1','Christianity'),
+          Number_of_badges(BadgesBD,UsersBD,'darkolivegreen4','Buddhism'),
+          Number_of_badges(BadgesJD,UsersJD,'orchid3','Judaism'))
+```
+</div>
+
+<div align='center'>
+```{r}
+tableline() %>%
+  kbl() %>%
+  kable_styling(full_width = F,html_font = 'Cambria')
+```
+</div>
+
+## Najwięcej postów jednego dnia
+<div align = "center" margin_top = "0", height="70%">
+```{r}
+posty_dzienne_ogolne(PostsJD,"orchid3", "Liczba postów na dzień")
+```
+</div>
+<div align = "center" margin_top = "0" size = "70%">
+```{r}
+kable(najwiecejpostowdata(PostsJD), format = "html", width = '30%')
+```
+
+## 
