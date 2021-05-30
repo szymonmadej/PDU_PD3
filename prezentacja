@@ -234,7 +234,7 @@ top10mostactiveusers(PostsJD) %>%
   kbl() %>%
   kable_classic(full_width = F)
 ```
-## Pijany użytkownik forum
+## Nadaktywny użytkownik forum
 
 ```{r}
 mostcrazy(PostsJD, CommentsJD) %>%
@@ -251,5 +251,12 @@ mostcrazy(PostsJD, CommentsJD) %>%
 <div class = "a">
 <ol><li><p>The opinion of Harav Moshe Feinstein ztâ€ťl holds two slices makes you responsible to wash.(I believe this would be the Main Psak (Halachic Ruling) for American's)</p></li><li><p>Harav Shlomo Zalman Aurbach ztâ€ťl, and Harav Elyashiv say any Pizza would require one to wash and bentch (V'zos Habrocha page 230).</p></li><li><p>Rav Belsky Shlita Rosh Yeshiva of Torah Voddas and Posek for the Orthodox Union says<br>two slices would only be a meal if they are eaten with something else, such as a knish.While I personally ascribe to 3 each person should seek Rabbinical counsel for this and all other question.</p></li></ol><p>Square otherwise known as Sicilian pizza which is made by first baking the dough and then adding the cheese is always Hamotzei the same applies to Pita-Pizza made by taking a Pita and putting cheese and Ketchup on it the Bracha also maintains it's Hamotzie status.</p><p>The above is a summary of a recent Halachicly Speaking article available here:<a href="http://www.ladaat.net/siteimages/fl_4c1258431c6eb.pdf" rel="noreferrer">http://www.ladaat.net/siteimages/fl_4c1258431c6eb.pdf</a></p>
 </div>
+
+## Dziękujemy za uwagę
+
+
+Jędrzej Ruciński  
+Grzegorz Pióro  
+Szymon Madej  
 
 
