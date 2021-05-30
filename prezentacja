@@ -4,7 +4,8 @@ author: "Jędrzej Ruciński, Szymon Madej, Grzegorz Pióro"
 output: 
   ioslides_presentation:
     widescreen: true
-    logo: 'MicrosoftTeams-image.png'
+    logo: MicrosoftTeams-image.png
+css: "style.css"
 ---
 
 ```{r setup, include=FALSE}
@@ -13,7 +14,6 @@ library(dplyr)
 library(magrittr)
 library(stringi)
 library(ggplot2)
-library(colorDF)
 library(readr)
 library(grid)
 library(lubridate)
@@ -22,38 +22,85 @@ library(kableExtra)
 ```
 
 ```{r}
-source('religia.R')
+source('main.R')
 ```
 
 
 ## Biblioteki i używane funkcje
 
-### Użyte biblioteki:  
-  - dplyr  
-  - stringi  
-  - ggplot2  
-  - colorDF  
-  - readr  
-  - reshape2  
-  - grid   
-  - lubridate  
+<div class="float-container">
+
+<div class="float-child">
+<div class="green">
+<h3> Użyte biblioteki: </h3>  
+- kableExtra  
+- dplyr   
+- stringi    
+- ggplot2  
+- readr  
+- reshape2  
+- grid   
+- lubridate 
+</div>
+</div>
   
+<div class="float-child">
+<div class="blue">
+<h3> Użyte funkcje: </h3>    
+- <a href = "https://www.gagolewski.com/resources/data/travel_stackexchange_com/readme.txt"> xml2csv </a> by Marek Gągolewski  
+- <a href = 'https://stackoverflow.com/questions/24387376/r-error-could-not-find-function-multiplot-using-cookbook-example' > multiplot </a> z forum StackOverflow
+</div>
+</div>
   
-### Użyte funkcje:    
-  - xml2csv by Marek Gągolewski    
-  - multiplot z forum <a href = 'https://stackoverflow.com/questions/24387376/r-error-could-not-find-function-multiplot-using-cookbook-example' > StackOverflow </a>
+</div>
 
 ## Liczba postów na dzień
 <div align='center'>
-```{r,cache = TRUE}
+```{r,cache = TRUE,fig.width = 8, fig.height=5.5}
  multiplot(posty_dzienne_ogolne(PostsCH,"royalblue1","Christianity"),posty_dzienne_ogolne(PostsBD,"darkolivegreen4",'Buddhism'),posty_dzienne_ogolne(PostsJD,"orchid3","Judaism"))
 ```
 </div>
 
+## Najwięcej postów jednego dnia
+<div align = "center" margin_top = "0", height="70%">
+```{r, cache = TRUE}
+posty_dzienne_ogolne(PostsJD,"orchid3", "Liczba postów na dzień")
+```
+</div>
+<div align = "center" margin_top = "0" size = "70%">
+```{r, cache = TRUE}
+kable(najwiecejpostowdata(PostsJD), format = "html", width = '30%')
+```
+
+##  Znalezione artykuły
+
+<div align = "center">
+<table>
+<tr>
+<td><img src="p1.jpg" width="300" height="250"></td>
+<td><img src="p2.jpg" width="400" height="250"></td
+</tr>
+<tr>
+<td><img src="p3.jpg" width="400" height="200"></td>
+<td><img src="p4.jpg" width="500" height="175"> </td
+</tr>
+</table>
+</div>
+
+## Treści postów z 19.02.2015
+
+```{r, cache = TRUE}
+most_posts_per_day(PostsJD) %>%
+  select(Title) %>%
+  distinct() %>%
+  kbl() %>%
+  kable_classic(full_width = F, html_font = "Cambria")
+```
+
 ## Liczba postów na poszczególny dzień roku
 
 <div align='center'>
-```{r,cache = TRUE}
+```{r,cache = TRUE, fig.width = 8, fig.height=5.5}
 ch <- posty_dzienne(PostsCH,"royalblue1",'Christianity')
 bd <- posty_dzienne(PostsBD,"darkolivegreen4",'Buddhism')
 jd <- posty_dzienne(PostsJD,"orchid3",'Judaism')
@@ -64,7 +111,7 @@ multiplot(ch,bd,jd)
 ## Liczba postów na dzień tygodnia
 
 <div align='center'>
-```{r,cache = TRUE,fig.dim=c(8,5.8)}
+```{r,cache = TRUE,fig.dim=c(8,5.5)}
 CH <- daysoftheweek(PostsCH, "royalblue1","Christianity")
 BD <- daysoftheweek(PostsBD,"darkolivegreen4","Buddhism")
 JD <- daysoftheweek(PostsJD,"orchid3","Judaism")
@@ -76,7 +123,7 @@ multiplot(CH,BD,JD)
 ## Liczba komentarzy na dzień tygodnia
 
 <div align='center'>
-```{r,cache = TRUE}
+```{r,cache = TRUE,fig.width = 8, fig.height=5.5}
 ch<- comments_number_by_day(PostsCH,CommentsCH,'royalblue1','Christianity' )
 bd<- comments_number_by_day(PostsBD,CommentsBD,'darkolivegreen4','Buddhism' )
 jd<- comments_number_by_day(PostsJD,CommentsJD,'orchid3','Judaism' )
@@ -84,10 +131,38 @@ multiplot(ch,bd,jd)
 ```
 </div>
 
+## Czas odpowiedzi
+
+<div class="container">
+<div class = "child">
+```{r}
+respond_time(PostsCH,CommentsCH) %>%
+  kbl(caption = "Christianity",col.names = NULL) %>%
+  kable_classic(full_width = F, html_font = "Cambria")
+```
+</div>
+<div class = "child">
+```{r}
+respond_time(PostsBD,CommentsBD) %>%
+  kbl(caption = "Buddhism",col.names = NULL) %>%
+  kable_classic(full_width = F, html_font = "Cambria")
+```
+</div>  
+<div class = "child">
+<div class = "red">
+```{r}
+respond_time(PostsJD,CommentsJD) %>%
+  kbl(caption = "Judaism",col.names = NULL) %>%
+  kable_classic(full_width = F, html_font = "Cambria")
+```
+</div>
+</div>
+</div>
+
 ## Tagi na poszczególnych forach
 
 <div align='center'>
-```{r,cache = TRUE}
+```{r,cache = TRUE,fig.width = 8, fig.height=5.5}
 tagsreligion()
 ```
 </div>
@@ -111,7 +186,7 @@ gestoscroznicyglosow()
 ## Gęstości Grzesia (2)
 
 <div align='center'>
-```{r,message=FALSE,warning=FALSE,cache=TRUE}
+```{r,message=FALSE,warning=FALSE,cache=TRUE, fig.width = 8, fig.height=5.5}
 gestoscbadges()
 ```
 </div>
@@ -129,7 +204,7 @@ gestoscreputacji()
 ## Typy użytkowników
 
 <div align='center'>
-```{r,cache=TRUE}
+```{r,cache=TRUE, fig.width = 8, fig.height=5.5}
 namesplot()
 ```
 </div>
@@ -137,7 +212,7 @@ namesplot()
 ## Zależność odznak od reputacji użytkowników
 
 <div align='center', height='400',width='500'>
-```{r,warning=FALSE,message=FALSE}
+```{r,warning=FALSE,message=FALSE, cache = TRUE}
 multiplot(Number_of_badges(BadgesCH,UsersCH,'royalblue1','Christianity'),
           Number_of_badges(BadgesBD,UsersBD,'darkolivegreen4','Buddhism'),
           Number_of_badges(BadgesJD,UsersJD,'orchid3','Judaism'))
@@ -145,22 +220,36 @@ multiplot(Number_of_badges(BadgesCH,UsersCH,'royalblue1','Christianity'),
 </div>
 
 <div align='center'>
-```{r}
+```{r, cache = TRUE}
 tableline() %>%
   kbl() %>%
   kable_styling(full_width = F,html_font = 'Cambria')
 ```
 </div>
 
-## Najwięcej postów jednego dnia
-<div align = "center" margin_top = "0", height="70%">
+## Najwięcej postów od jednego użytkownika
+
 ```{r}
-posty_dzienne_ogolne(PostsJD,"orchid3", "Liczba postów na dzień")
+top10mostactiveusers(PostsJD) %>%
+  kbl() %>%
+  kable_classic(full_width = F)
 ```
-</div>
-<div align = "center" margin_top = "0" size = "70%">
+## Pijany użytkownik forum
+
 ```{r}
-kable(najwiecejpostowdata(PostsJD), format = "html", width = '30%')
+mostcrazy(PostsJD, CommentsJD) %>%
+  select(Title, CreationDate) %>%
+  distinct() %>%
+  kbl() %>%
+  kable_classic(full_width = F)
 ```
 
-## 
+## Pizza
+
+
+<p>How many slices are required to make you responsible to wash on Pizza?</p>  
+<div class = "a">
+<ol><li><p>The opinion of Harav Moshe Feinstein ztâ€ťl holds two slices makes you responsible to wash.(I believe this would be the Main Psak (Halachic Ruling) for American's)</p></li><li><p>Harav Shlomo Zalman Aurbach ztâ€ťl, and Harav Elyashiv say any Pizza would require one to wash and bentch (V'zos Habrocha page 230).</p></li><li><p>Rav Belsky Shlita Rosh Yeshiva of Torah Voddas and Posek for the Orthodox Union says<br>two slices would only be a meal if they are eaten with something else, such as a knish.While I personally ascribe to 3 each person should seek Rabbinical counsel for this and all other question.</p></li></ol><p>Square otherwise known as Sicilian pizza which is made by first baking the dough and then adding the cheese is always Hamotzei the same applies to Pita-Pizza made by taking a Pita and putting cheese and Ketchup on it the Bracha also maintains it's Hamotzie status.</p><p>The above is a summary of a recent Halachicly Speaking article available here:<a href="http://www.ladaat.net/siteimages/fl_4c1258431c6eb.pdf" rel="noreferrer">http://www.ladaat.net/siteimages/fl_4c1258431c6eb.pdf</a></p>
+</div>
+
+
