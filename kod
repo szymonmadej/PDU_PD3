@@ -301,7 +301,8 @@ respond_time <- function(PostsCH, CommentsCH){
     select(Id, CreationDate.x, ViewCount,CommentCount, Score.y, CreationDate.y) %>%
     mutate(Diff_time = round(difftime(str2date(CreationDate.y),str2date(CreationDate.x)
                                       , units = "days"))) %>%
-    mutate(Day = weekdays(str2date(CreationDate.y)))
+    mutate(Day = weekdays(str2date(CreationDate.x)))
+  com <- com[!is.na(com$Diff_time),]
   com <- com %>%
     group_by(Day)%>%
     summarise(avg_com_time = round(mean(Diff_time), digits = 0))
@@ -351,7 +352,7 @@ tagsreligion <- function(){
   tagschr <- ggplot(tagsall, aes(x=TagName,y=Christianity)) + geom_bar(stat='identity',fill = 'royalblue1') +
     scale_x_discrete(guide= guide_axis(angle = 50)) + ggtitle('Christianity') +labs(x=NULL, y="Count")
   tagsjud <- ggplot(tagsall, aes(x=TagName,y=Judaism)) + geom_bar(stat='identity',fill = 'orchid3') +
-    scale_x_discrete(guide= guide_axis(angle = 50)) + ggtitle('Judaism') + labs(x=NULL, y="Ilość")
+    scale_x_discrete(guide= guide_axis(angle = 50)) + ggtitle('Judaism') + labs(x=NULL, y="Count")
   
   multiplot(tagsbud,tagschr,tagsjud)
 }
