@@ -1,0 +1,29 @@
+.float-container {
+    border: 3px solid #fff;
+    padding: 20px;
+}
+
+.float-child {
+    width: 50%;
+    float: left;
+}
+
+a:link {
+  color: purple;
+  background-color: transparent;
+  text-decoration: none;
+}
+
+.container {
+    border: 3px solid #fff;
+    padding: 20px;
+}
+
+.child {
+    width: 33%;
+    float: left;
+}
+
+div.a {
+  font-size: 20px;
+}
